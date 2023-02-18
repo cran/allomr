@@ -2,7 +2,7 @@ Package: allomr
 Type: Package
 Title: Removing Allometric Effects of Body Size in Morphological
         Analysis
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: c(person("Sämi", "Schär", role = c("aut", "cre","cph"),
     email = "saemi.schaer@gmail.com", 
     comment = c(ORCID = "0000-0001-6108-4832")))
@@ -15,8 +15,8 @@ Description: Implementation of the technique of Lleonart et al.
 License: GPL (>= 3)
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2022-11-21 21:55:00 UTC; ping
+Packaged: 2023-02-18 08:34:40 UTC; ping
 Author: Sämi Schär [aut, cre, cph] (<https://orcid.org/0000-0001-6108-4832>)
 Maintainer: Sämi Schär <saemi.schaer@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-11-22 14:20:12 UTC
+Date/Publication: 2023-02-18 08:50:08 UTC
