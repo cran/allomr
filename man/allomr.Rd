@@ -13,16 +13,16 @@ allomr(X, Y, X0, a, b)
 Required. A numerical vector, containing the first set of body measurements.
 }
   \item{Y}{
-Required. A numerical vector, containing the second set of body measurements. These are the measurements from which allometric effects will be removed. This is achieved by calculating Y*, the normalized value of Y this subject would reach when X=X0.
+Required. Either a numerical vector or an entire data set, containing the second set of body measurements. These are the measurements from which allometric effects will be removed. This is achieved by calculating Y*, the normalized value of Y this subject would reach when X=X0.
 }
   \item{X0}{
 Optional. The value of X for which Y should be normalized. Default is the mean of X.
 }
   \item{a}{
-Optional. The regression parameter a. Derived from data if not specified.
+Optional. The regression parameter a. Derived from data if not specified or if Y is a data set.
 }
   \item{b}{
-Optional. The regression parameter b. Derived from data if not specified.
+Optional. The regression parameter b. Derived from data if not specified or if Y is a data set.
 }}
 \details{
 Calculates \eqn{X_{0}} as the mean of \eqn{X} and the regression parameters \eqn{a} and \eqn{b} (if not specified) according to equation (A.5). \eqn{Y^*} is calculated according to equation (13) and the particular shape factor \eqn{exp(\varepsilon_{i})} according to equation (9) in Lleonart et al. (2000) <doi:10.1006/jtbi.2000.2043>.
@@ -82,6 +82,7 @@ allomr(X=B2$X, Y=B2$Y, X0=3.4, a=0.705, b=1.092)
 
 ## The function is currently defined as
 allomr <- function(X, Y, X0, a, b){
+  if (is.vector(Y)==TRUE){
     m1 <- lm(log(Y)~log(X))
     n <- length(X[!is.na(X)])
     if (missing(a)){
@@ -97,7 +98,33 @@ allomr <- function(X, Y, X0, a, b){
     exp_e <- Y/(a*X^b)
     obj <-list(n, a, b, X0, Yx, exp_e)
     names(obj) <-c("n","a","b","X0","Yx","exp_e")
+    class(obj) <- "allomr"
     return(obj)
+  }
+  else {
+    if (!missing(a) | !missing(b)){
+      message("NOTE: Y is a data set. Regression parameters will be derived from data.")
+    }
+    a<-NULL
+    b<-NULL
+    Yx<-NULL
+    exp_e<-NULL
+    for (i in 1:ncol(Y)){
+      m1<- lm(log(Y[[i]])~log(X))
+      n<-length(X[!is.na(X)])
+      a<- cbind(a, exp(m1$coefficients[1]))
+      b<- cbind(b, m1$coefficients[2])
+      if (missing(X0)){
+        X0<-mean(X, na.rm=TRUE)
+      }
+      Yx<- cbind(Yx, Y[[i]]*(X0/X)^m1$coefficients[2])
+      exp_e<- cbind(exp_e, Y[[i]]/(exp(m1$coefficients[1])*X^m1$coefficients[2]))
+    }
+    obj <-list(n, a, b, X0, Yx, exp_e)
+    names(obj) <-c("n","a","b","X0","Yx","exp_e")
+    class(obj) <- "allomr"
+    return(obj)
+  }
 }
 }
 
